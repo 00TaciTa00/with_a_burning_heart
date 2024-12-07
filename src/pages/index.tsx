@@ -68,7 +68,6 @@ export default function Home() {
   };
 
   useEffect(() => {
-    alert("완료");
     // clickableDiv 관련 코드 실행
     const clickableDiv = document.getElementById("clickable");
     if (clickableDiv) {
