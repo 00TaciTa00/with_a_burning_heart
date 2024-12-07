@@ -140,7 +140,6 @@ export default function Home() {
         </div>
       </main>
       <footer className="flex flex-row items-center justify-end gap-2 p-2 m-2 text-gray-400 rounded-lg bg-base-300">
-        <button className="btn btn-outline btn-sm">주의 사항</button>
         <div className="flex-1" />
         <p>1.1.1v</p>
         <p>2024.12.07</p>
