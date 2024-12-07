@@ -112,7 +112,7 @@ export default function Home() {
             <div
               id="clickable"
               onClick={handleStickers}
-              className="w-full h-full bg-red-500"
+              className="w-full h-full"
             >
               <Image
                 src={imageUrl}
