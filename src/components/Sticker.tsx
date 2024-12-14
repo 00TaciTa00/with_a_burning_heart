@@ -15,7 +15,7 @@ const Sticker = ({ x, y, image }: StickerProps) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setOpacity(0);
-    }, 0); // 시작 시 바로 애니메이션 시작
+    }, 2000); // 2초 뒤에 애니메이션 시작
 
     return () => clearTimeout(timer);
   }, []);
@@ -27,7 +27,7 @@ const Sticker = ({ x, y, image }: StickerProps) => {
         left: dx,
         top: dy,
         opacity: opacity,
-        transition: "opacity 5s ease-out",
+        transition: "opacity 7s ease-out", // 7초 동안 애니메이션 진행
         userSelect: "none",
       }}
     >

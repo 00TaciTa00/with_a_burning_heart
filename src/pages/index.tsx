@@ -1,23 +1,21 @@
+import { useState } from "react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import Sticker from "./components/Sticker";
+import ImageInput from "@/components/ImageInput";
+import Sticker from "@/components/Sticker";
+import ImageCloseButton from "@/components/ImageCloseButton";
+import { RECTTYPE } from "@/types/index";
 
 export default function Home() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [stickers, setStickers] = useState<{ x: number; y: number }[]>([]);
-  const [clickableRange, setClickableRange] = useState<{
-    top: number;
-    left: number;
-    bottom: number;
-    right: number;
-  }>({
+  const [clickableRange, setClickableRange] = useState<RECTTYPE>({
     top: 0,
     left: 0,
     bottom: 0,
     right: 0,
   });
-  const stickerImage = "/assets/fire.png";
+  const stickerImage = "/assets/stickers/fire.png";
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -40,10 +38,31 @@ export default function Home() {
 
       reader.readAsDataURL(file);
     }
+
+    const clickableDiv = document.getElementById("clickable");
+    if (clickableDiv) {
+      const rect = clickableDiv.getBoundingClientRect();
+      setClickableRange({
+        top: rect.top,
+        left: rect.left,
+        bottom: rect.bottom,
+        right: rect.right,
+      });
+    }
+  };
+
+  const handleImageDelete = () => {
+    alert("이미지를 삭제합니다.");
+    setUploadedFile(null);
+    setImageUrl(null);
+    setStickers([]);
   };
 
   const handleStickers = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
+    const clickableDiv = document.getElementById("clickable");
+    if (!clickableDiv) return;
+
+    const rect = clickableDiv.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     console.log(x, y);
@@ -67,53 +86,29 @@ export default function Home() {
     setStickers([...stickers, { x: x - 48, y: y - 48 }]);
   };
 
-  useEffect(() => {
-    // clickableDiv 관련 코드 실행
-    const clickableDiv = document.getElementById("clickable");
-    if (clickableDiv) {
-      const rect = clickableDiv.getBoundingClientRect();
-      console.log("Top:", rect.top);
-      console.log("Left:", rect.left);
-      console.log("Bottom:", rect.bottom);
-      console.log("Right:", rect.right);
-      setClickableRange({
-        top: rect.top,
-        left: rect.left,
-        bottom: rect.bottom,
-        right: rect.right,
-      });
-    }
-  }, [uploadedFile, imageUrl]);
-
   return (
     <div className="flex flex-col h-svh">
-      <header className="p-2 navbar">
-        <div className="w-full h-full p-2 rounded-lg bg-base-300">
-          <div className="flex-1">
-            <input
-              type="file"
-              className="w-full max-w-xs file-input"
-              onChange={handleImageUpload}
-            />
-          </div>
+      <header className="p-2">
+        <div className="flex flex-row items-center justify-center w-full h-full p-2 rounded-lg bg-slate-200">
           <div className="flex-none">
-            <button
-              onClick={() => alert("업데이트 예정입니다!")}
-              className="btn btn-outline"
-            >
+            <button onClick={() => alert("업데이트 예정입니다!")}>
               스티커 선택
             </button>
           </div>
         </div>
       </header>
       <main className="flex items-center justify-center flex-1 p-12">
-        <div className="relative flex items-center justify-center w-screen h-full">
+        <div
+          className="relative flex items-center justify-center w-screen h-full bg-transparent"
+          id="clickable"
+        >
           {uploadedFile && imageUrl ? (
-            <div
-              id="clickable"
-              onClick={handleStickers}
-              className="w-full h-full"
-            >
+            <div className="w-full h-full">
+              <ImageCloseButton
+                dataModalTarget="static-modal"
+                dataModalToggle=""
+                onClick={handleImageDelete}
+              />
               <Image
                 src={imageUrl}
                 alt="업로드된 이미지"
@@ -121,6 +116,7 @@ export default function Home() {
                 style={{ objectFit: "contain" }}
                 className="rounded-lg"
                 draggable={false}
+                onClick={handleStickers}
               />
               {stickers.map((sticker, index) => (
                 <Sticker
@@ -132,13 +128,11 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <p className="absolute flex items-center justify-center w-full h-full">
-              이미지를 업로드 해주세요.
-            </p>
+            <ImageInput onChange={handleImageUpload} />
           )}
         </div>
       </main>
-      <footer className="flex flex-row items-center justify-end gap-2 p-2 m-2 text-gray-400 rounded-lg bg-base-300">
+      <footer className="flex flex-row items-center justify-end gap-2 p-2 m-2 text-gray-400 border-2 rounded-lg">
         <div className="flex-1" />
         <p>1.1.1v</p>
         <p>2024.12.07</p>
